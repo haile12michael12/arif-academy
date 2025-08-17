@@ -24,10 +24,12 @@ const interviewRoutes = require("./Routes/interview.route");
 const companyRoutes = require("./Routes/company.route");
 const notificationRoutes = require("./Routes/notification.route");
 const mlRoutes = require("./Routes/ml.route");
+const chatRoutes = require("./Routes/chat.route");
 
 // Socket.io setup for real-time notifications
 const http = require("http");
 const server = http.createServer(app);
+const PORT = process.env.PORT || 8000;
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
@@ -86,8 +88,9 @@ app.use("/api/problems", problemRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/ml", mlRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Use server.listen instead of app.listen for Socket.io
-server.listen(port, () => {
-  console.log(`Server is running on port ${port} with Socket.io support`);
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT} with Socket.io support`);
 });

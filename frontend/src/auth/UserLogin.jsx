@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +19,7 @@ import axios from "axios";
 import { ImSpinner2 } from "react-icons/im";
 import { useSetRecoilState } from "recoil";
 import { tokenState } from "@/store/auth";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const UserLogin = () => {
   const [email, setEmail] = useState("");
@@ -27,6 +29,8 @@ const UserLogin = () => {
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [facebookLoading, setFacebookLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
@@ -145,7 +149,95 @@ const UserLogin = () => {
     }
   };
 
+  // Google Login
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        setGoogleLoading(true);
+        const res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/api/user/google-login`,
+          { token: response.access_token }
+        );
+        
+        if (res.status === 200) {
+          toast.success(res.data.message);
+          setTokenState(res.data?.token);
+          localStorage.setItem("token", res.data?.token || "");
+          localStorage.setItem("user", JSON.stringify(res.data?.user));
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.error("Google login error:", error);
+        toast.error("Failed to login with Google");
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google login failed");
+      setGoogleLoading(false);
+    }
+  });
+
+  // Facebook Login
+  const handleFacebookLogin = async () => {
+    try {
+      setFacebookLoading(true);
+      // Initialize Facebook SDK
+      window.FB.login(async (response) => {
+        if (response.authResponse) {
+          const { accessToken, userID } = response.authResponse;
+          
+          try {
+            const res = await axios.post(
+              `${import.meta.env.VITE_BASE_URL}/api/user/facebook-login`,
+              { accessToken, userID }
+            );
+            
+            if (res.status === 200) {
+              toast.success(res.data.message);
+              setTokenState(res.data?.token);
+              localStorage.setItem("token", res.data?.token || "");
+              localStorage.setItem("user", JSON.stringify(res.data?.user));
+              navigate("/dashboard");
+            }
+          } catch (error) {
+            console.error("Facebook login error:", error);
+            toast.error("Failed to login with Facebook");
+          }
+        } else {
+          toast.error("Facebook login was cancelled");
+        }
+        setFacebookLoading(false);
+      }, { scope: 'email,public_profile' });
+    } catch (error) {
+      console.error("Facebook SDK error:", error);
+      toast.error("Failed to initialize Facebook login");
+      setFacebookLoading(false);
+    }
+  };
+
+  // Initialize Facebook SDK
   useEffect(() => {
+    // Load Facebook SDK
+    window.fbAsyncInit = function() {
+      window.FB.init({
+        appId: import.meta.env.VITE_FACEBOOK_APP_ID,
+        cookie: true,
+        xfbml: true,
+        version: 'v18.0'
+      });
+    };
+
+    // Load the SDK asynchronously
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    
     window.scrollTo(0, 0);
     document.title = "CAREER INSIGHT | USER LOGIN / SIGNUP";
   }, []);
@@ -233,7 +325,7 @@ const UserLogin = () => {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-4">
               <Button className="w-full" disabled={loading} type="submit">
                 {loading ? (
                   <div className="flex flex-row gap-2 items-center">
@@ -243,6 +335,51 @@ const UserLogin = () => {
                   "Login"
                 )}
               </Button>
+              
+              <div className="relative w-full flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <span className="relative px-2 text-sm text-muted-foreground bg-background">
+                  Or continue with
+                </span>
+              </div>
+              
+              <div className="flex gap-2 w-full">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full flex gap-2 items-center justify-center"
+                  onClick={handleGoogleLogin}
+                  disabled={googleLoading}
+                >
+                  {googleLoading ? (
+                    <ImSpinner2 className="animate-spin" />
+                  ) : (
+                    <>
+                      <FaGoogle className="h-4 w-4" />
+                      Google
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full flex gap-2 items-center justify-center"
+                  onClick={handleFacebookLogin}
+                  disabled={facebookLoading}
+                >
+                  {facebookLoading ? (
+                    <ImSpinner2 className="animate-spin" />
+                  ) : (
+                    <>
+                      <FaFacebook className="h-4 w-4" />
+                      Facebook
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -365,17 +502,64 @@ const UserLogin = () => {
                 </div>
               )}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-4">
               {!isOtpSent && (
-                <Button disabled={loading} className="w-full" type="submit">
-                  {loading ? (
-                    <div className="flex flex-row gap-2 items-center">
-                      <ImSpinner2 className="animate-spin" /> Sending OTP
+                <>
+                  <Button disabled={loading} className="w-full" type="submit">
+                    {loading ? (
+                      <div className="flex flex-row gap-2 items-center">
+                        <ImSpinner2 className="animate-spin" /> Sending OTP
+                      </div>
+                    ) : (
+                      "Sign Up"
+                    )}
+                  </Button>
+                  
+                  <div className="relative w-full flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
                     </div>
-                  ) : (
-                    "Sign Up"
-                  )}
-                </Button>
+                    <span className="relative px-2 text-sm text-muted-foreground bg-background">
+                      Or sign up with
+                    </span>
+                  </div>
+                  
+                  <div className="flex gap-2 w-full">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="w-full flex gap-2 items-center justify-center"
+                      onClick={handleGoogleLogin}
+                      disabled={googleLoading}
+                    >
+                      {googleLoading ? (
+                        <ImSpinner2 className="animate-spin" />
+                      ) : (
+                        <>
+                          <FaGoogle className="h-4 w-4" />
+                          Google
+                        </>
+                      )}
+                    </Button>
+                    
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="w-full flex gap-2 items-center justify-center"
+                      onClick={handleFacebookLogin}
+                      disabled={facebookLoading}
+                    >
+                      {facebookLoading ? (
+                        <ImSpinner2 className="animate-spin" />
+                      ) : (
+                        <>
+                          <FaFacebook className="h-4 w-4" />
+                          Facebook
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </>
               )}
             </CardFooter>
           </Card>

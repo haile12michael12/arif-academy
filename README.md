@@ -2,6 +2,8 @@
 
 A comprehensive AI-powered learning platform designed to help students build professional portfolios, gain career insights, and connect with industry experts.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone)
+
 ## 🌟 Features
 
 ### 🎯 Core Services
@@ -28,6 +30,30 @@ A comprehensive AI-powered learning platform designed to help students build pro
 
 ### Frontend
 - **React.js** - Modern UI framework
+
+## 🚀 Deployment
+
+Arif Academy is configured for easy deployment with Vercel. For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### Quick Deployment Steps
+
+1. Fork or clone this repository
+2. Set up environment variables in Vercel
+3. Deploy frontend and backend separately
+4. Connect your frontend to the backend API
+
+For local development:
+```bash
+# Clone the repository
+git clone <repository-url>
+cd arif-academy
+
+# Install dependencies and start development servers
+./build.sh
+cd frontend && npm run dev
+# In another terminal
+cd backend && npm run dev
+```
 - **Vite** - Fast build tool
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Router** - Client-side routing

@@ -17,7 +17,22 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       min: 8,
-      required: true,
+      required: false, // Changed to false to allow social login without password
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple null values
+    },
+    facebookId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple null values
+    },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google', 'facebook'],
+      default: 'local'
     },
     otp: {
       type: Number,

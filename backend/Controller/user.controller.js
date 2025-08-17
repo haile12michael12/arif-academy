@@ -12,8 +12,12 @@ const fs = require("fs");
 const linkedIn = require("linkedin-jobs-api");
 const QuizResult = require("../Models/coursemarks.model");
 const axios = require("axios");
+const { OAuth2Client } = require('google-auth-library');
 
 dotenv.config();
+
+// Initialize Google OAuth client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
@@ -106,6 +110,7 @@ const verifyOTP = async (req, res) => {
       password: hashedPassword,
       fullName,
       photo,
+      authProvider: 'local'
     });
 
     await newUser.save();
@@ -118,6 +123,138 @@ const verifyOTP = async (req, res) => {
       .json({ message: "User verified and registered successfully" });
   } catch (error) {
     console.error("Error verifying OTP:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Google login verification
+const googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    // Verify the Google token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+    
+    // Check if user exists
+    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+    
+    if (user) {
+      // If user exists but doesn't have googleId (registered with email)
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.authProvider = 'google';
+        await user.save();
+      }
+    } else {
+      // Create new user
+      user = new User({
+        email,
+        fullName: name,
+        googleId,
+        photo: picture,
+        authProvider: 'google'
+      });
+      await user.save();
+    }
+    
+    // Generate JWT token
+    const jwtToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+    
+    const userDetailsIncomplete =
+      !user.phoneno ||
+      !user.gender ||
+      !user.dateofbirth ||
+      !user.collegename ||
+      !user.university ||
+      !user.academicyear ||
+      !user.address ||
+      !user.techstack;
+    
+    res.status(200).json({
+      message: "Login successful",
+      token: jwtToken,
+      user: {
+        _id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+        photo: user.photo,
+        phoneno: user.phoneno ? user.phoneno : null,
+      },
+      userDetailsIncomplete,
+    });
+  } catch (error) {
+    console.error("Error with Google login:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Facebook login verification
+const facebookLogin = async (req, res) => {
+  try {
+    const { accessToken, userID } = req.body;
+    
+    // Fetch user data from Facebook Graph API
+    const response = await axios.get(
+      `https://graph.facebook.com/v18.0/${userID}?fields=id,name,email,picture&access_token=${accessToken}`
+    );
+    
+    const { id: facebookId, email, name, picture } = response.data;
+    
+    // Check if user exists
+    let user = await User.findOne({ $or: [{ facebookId }, { email }] });
+    
+    if (user) {
+      // If user exists but doesn't have facebookId (registered with email)
+      if (!user.facebookId) {
+        user.facebookId = facebookId;
+        user.authProvider = 'facebook';
+        await user.save();
+      }
+    } else {
+      // Create new user
+      user = new User({
+        email: email || `${facebookId}@facebook.com`, // Some Facebook users might not have email
+        fullName: name,
+        facebookId,
+        photo: picture?.data?.url || `https://ui-avatars.com/api/?name=${name.charAt(0)}&size=150&background=ffffff&color=7c3aed`,
+        authProvider: 'facebook'
+      });
+      await user.save();
+    }
+    
+    // Generate JWT token
+    const jwtToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+    
+    const userDetailsIncomplete =
+      !user.phoneno ||
+      !user.gender ||
+      !user.dateofbirth ||
+      !user.collegename ||
+      !user.university ||
+      !user.academicyear ||
+      !user.address ||
+      !user.techstack;
+    
+    res.status(200).json({
+      message: "Login successful",
+      token: jwtToken,
+      user: {
+        _id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+        photo: user.photo,
+        phoneno: user.phoneno ? user.phoneno : null,
+      },
+      userDetailsIncomplete,
+    });
+  } catch (error) {
+    console.error("Error with Facebook login:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -603,6 +740,8 @@ module.exports = {
   register,
   verifyOTP,
   login,
+  googleLogin,
+  facebookLogin,
   updateProfile,
   getalluser,
   getuserbyid,

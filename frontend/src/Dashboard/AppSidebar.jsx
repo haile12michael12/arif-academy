@@ -13,6 +13,7 @@ import { FaSchool } from "react-icons/fa6";
 import { BsSuitcaseLgFill } from "react-icons/bs";
 import { PiKanbanFill } from "react-icons/pi";
 import { Crown, FileUser } from 'lucide-react';
+import ChatBot from '@/components/ChatBot';
 
 const data = {
     navMain: [
@@ -49,58 +50,63 @@ const AppSidebar = () => {
     const proFeatures = ['AI Podcast', 'Create Course', 'Resume Builder', 'Mock Interview', 'Portfolio Builder'];
 
     return (
-        <Sidebar className="w-[275px] min-h-screen shadow-md" style={{ color: `var(--text-color)`, borderColor: `var(--borderColor)` }}>
-            <SidebarHeader className="px-4" style={{ backgroundColor: `var(--background-color)` }}>
-                <div className="flex items-center gap-3 justify-center my-1">
-                    <img src={logo} onClick={() => navigate("/")} alt="Logo" className="w-auto h-9 cursor-pointer object-contain" />
-                </div>
-            </SidebarHeader>
+        <>
+            <Sidebar className="w-[275px] min-h-screen shadow-md" style={{ color: `var(--text-color)`, borderColor: `var(--borderColor)` }}>
+                <SidebarHeader className="px-4" style={{ backgroundColor: `var(--background-color)` }}>
+                    <div className="flex items-center gap-3 justify-center my-1">
+                        <img src={logo} onClick={() => navigate("/")} alt="Logo" className="w-auto h-9 cursor-pointer object-contain" />
+                    </div>
+                </SidebarHeader>
 
-            <SidebarContent className="flex flex-col px-4" style={{ backgroundColor: `var(--background-color)` }}>
-                <Separator orientation="horizontal" className="my-1.5 h-[0.2px] bg-primary" />
-                <SidebarMenu>
-                    {data.navMain.map((item, index) => {
-                        const isActive = location.pathname === item.url;
-                        const isPro = proFeatures.includes(item.title);
+                <SidebarContent className="flex flex-col px-4" style={{ backgroundColor: `var(--background-color)` }}>
+                    <Separator orientation="horizontal" className="my-1.5 h-[0.2px] bg-primary" />
+                    <SidebarMenu>
+                        {data.navMain.map((item, index) => {
+                            const isActive = location.pathname === item.url;
+                            const isPro = proFeatures.includes(item.title);
 
-                        return (
-                            <SidebarMenuItem key={index}>
-                                <Link
-                                    to={item.url}
-                                    className={`flex items-center gap-3.5 px-3 py-2 my-0.5 rounded-lg text-sm font-medium transition-all duration-200
-                                    hover:bg-primary hover:text-white hover:shadow-sm
-                                    ${isActive ? "bg-primary shadow-md" : ''}`}
-                                    style={{ color: `var(--text-color)` }}>
+                            return (
+                                <SidebarMenuItem key={index}>
+                                    <Link
+                                        to={item.url}
+                                        className={`flex items-center gap-3.5 px-3 py-2 my-0.5 rounded-lg text-sm font-medium transition-all duration-200
+                                        hover:bg-primary hover:text-white hover:shadow-sm
+                                        ${isActive ? "bg-primary shadow-md" : ''}`}
+                                        style={{ color: `var(--text-color)` }}>
 
-                                    <div className="p-1.5 rounded-md" style={{ backgroundColor: `var(--text-color)` }}>
-                                        <item.icon style={{ color: `var(--background-color)` }} size={20} />
-                                    </div>
+                                        <div className="p-1.5 rounded-md" style={{ backgroundColor: `var(--text-color)` }}>
+                                            <item.icon style={{ color: `var(--background-color)` }} size={20} />
+                                        </div>
 
-                                    <div className="text-sm font-semibold flex items-center w-full">
-                                        <span>{item.title}</span>
-                                        {user.subscribed && isPro && (
-                                            <Crown className="text-yellow-400 ml-auto" size={18} />
-                                        )}
-                                    </div>
-                                </Link>
-                            </SidebarMenuItem>
-                        );
-                    })}
-                </SidebarMenu>
-            </SidebarContent>
+                                        <div className="text-sm font-semibold flex items-center w-full">
+                                            <span>{item.title}</span>
+                                            {user.subscribed && isPro && (
+                                                <Crown className="text-yellow-400 ml-auto" size={18} />
+                                            )}
+                                        </div>
+                                    </Link>
+                                </SidebarMenuItem>
+                            );
+                        })}
+                    </SidebarMenu>
+                </SidebarContent>
 
-            <SidebarFooter className="p-4" style={{ backgroundColor: `var(--background-color)`, color: `var(--text - color)` }}>
-                <Separator orientation="horizontal" className="my-1.5 h-[0.2px] bg-primary" />
-                <Button
-                    variant="destructive"
-                    onClick={handleLogout}
-                    className="w-full py-2 text-sm font-medium hover:bg-red-600 hover:text-white transition"
-                >
-                    Logout
-                </Button>
-            </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
+                <SidebarFooter className="p-4" style={{ backgroundColor: `var(--background-color)`, color: `var(--text - color)` }}>
+                    <Separator orientation="horizontal" className="my-1.5 h-[0.2px] bg-primary" />
+                    <Button
+                        variant="destructive"
+                        onClick={handleLogout}
+                        className="w-full py-2 text-sm font-medium hover:bg-red-600 hover:text-white transition"
+                    >
+                        Logout
+                    </Button>
+                </SidebarFooter>
+                <SidebarRail />
+            </Sidebar>
+            
+            {/* Render ChatBot component */}
+            <ChatBot />
+        </>
     );
 };
 

@@ -3,6 +3,8 @@ const router = express.Router();
 const {
   register,
   login,
+  googleLogin,
+  facebookLogin,
   updateProfile,
   verifyOTP,
   getalluser,
@@ -21,6 +23,8 @@ const { authenticateToken } = require("../Middlewares/auth.middleware");
 
 router.post("/register", register);
 router.post("/login", login);
+router.post("/google-login", googleLogin);
+router.post("/facebook-login", facebookLogin);
 router.put("/update-profile", authenticateToken, updateProfile);
 router.post("/verify-otp", verifyOTP);
 router.get("/getalluser", getalluser);

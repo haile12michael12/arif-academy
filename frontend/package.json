@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node --max-old-space-size=4096 node_modules/.bin/vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.5",
@@ -26,7 +27,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@react-oauth/google": "^0.12.1",
+    "@react-oauth/google": "^0.12.2",
     "@react-three/drei": "^9.121.5",
     "@react-three/fiber": "^8.17.14",
     "@smastrom/react-rating": "^1.5.0",
