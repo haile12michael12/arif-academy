@@ -8,7 +8,7 @@ import ContactUs from "./ContactUs";
 const AboutUs = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
-        document.title = "CAREERINSIGHT | ABOUT CAREERINSIGHT";
+        document.title = "Arif Academy | ABOUT Arif Academy";
     }, []);
     return (
         <div className="2xl:container lg:py-16  md:py-12 py-9 ">
@@ -30,7 +30,7 @@ const AboutUs = () => {
                         About <span className="text-primary">Us</span>
                     </h1>
                     <p className="text-lg leading-relaxed text-start font-semibold tracking-tight">
-                        At <span className="text-primary font-bold">Arif Academy</span>, we empower 2nd and 3rd-year students by providing insights into trending technologies. Our platform helps you stay ahead in the tech world by curating the latest trends in software development, data science, artificial intelligence, and more. With a focus on usability and relevance, we ensure your learning journey is informative and efficient.
+                        At <span className="text-primary font-bold">Arif Academy</span>, we empower  students by providing insights into trending technologies. Our platform helps you stay ahead in the tech world by curating the latest trends in software development, data science, artificial intelligence, and more. With a focus on usability and relevance, we ensure your learning journey is informative and efficient.
                     </p>
                 </div>
             </div>
@@ -70,7 +70,8 @@ const AboutUs = () => {
                         <div className="p-4 pb-6 flex justify-center flex-col items-center">
                             <img className="rounded-md" src={ramesh} alt="Liam featued Img" />
                             <p className="font-medium text-xl leading-5 mt-4">
-                                Ramesh <span className="text-primary">Yadav</span>
+                                
+                    
                             </p>
                         </div>
                     </div>

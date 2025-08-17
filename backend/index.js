@@ -22,6 +22,37 @@ const problemRoutes = require("./Routes/problem.route");
 
 const interviewRoutes = require("./Routes/interview.route");
 const companyRoutes = require("./Routes/company.route");
+const notificationRoutes = require("./Routes/notification.route");
+const mlRoutes = require("./Routes/ml.route");
+
+// Socket.io setup for real-time notifications
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Socket.io connection handling
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+  
+  // Join user to their personal notification room
+  socket.on("join", (userId) => {
+    socket.join(`user:${userId}`);
+    console.log(`User ${userId} joined their notification room`);
+  });
+  
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+// Make io accessible to route handlers
+app.set("io", io);
 
 const fileUpload = require("express-fileupload");
 const { cloudnairyconnect } = require("./Config/cloudinary");
@@ -53,7 +84,10 @@ app.use("/api/podcast", podcastRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/problems", problemRoutes);
 app.use("/api/company", companyRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/ml", mlRoutes);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+// Use server.listen instead of app.listen for Socket.io
+server.listen(port, () => {
+  console.log(`Server is running on port ${port} with Socket.io support`);
 });

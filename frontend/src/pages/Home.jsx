@@ -4,13 +4,18 @@ import FAQ from '@/home/FAQ'
 import Features from '@/home/Features'
 import Hero from '@/home/Hero'
 import WebDetails from '@/home/WebDetails'
+import LearningPath from '@/home/LearningPath'
+import CommunityForum from '@/home/CommunityForum'
+import AIStudyAssistant from '@/home/AIStudyAssistant'
+import GamifiedLearning from '@/home/GamifiedLearning'
 import React, { useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 const Home = () => {
     const { theme } = useTheme();
 
     useEffect(() => {
-        document.title = "CAREERINSIGHT";
+        document.title = "Arif Academy";
     }, []);
     return (
         <div>
@@ -25,7 +30,35 @@ const Home = () => {
             <Hero />
             <Category />
             <Features />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <LearningPath />
+            </motion.div>
             <WebDetails />
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <AIStudyAssistant />
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <CommunityForum />
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <GamifiedLearning />
+            </motion.div>
             <FAQ />
         </div>
     )

@@ -19,6 +19,10 @@ A comprehensive AI-powered learning platform designed to help students build pro
 - **Industry Insights** - Real-time career market analysis
 - **Online Assessments** - Comprehensive skill testing
 - **Company Roadmap** - Career path planning tools
+- **Learning Path Visualization** - Interactive visual learning journey
+- **Community Forum** - Connect with peers and industry experts
+- **AI Study Assistant** - 24/7 personalized learning support
+- **Gamified Learning Experience** - Achievement badges, leaderboards, and rewards
 
 ## 🛠️ Tech Stack
 
@@ -228,8 +232,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 - **Email**: contact@arifacademy.com
-- **Phone**: +1 (555) 123-4567
-- **Location**: New York, NY, USA
+- **Phone**: +251 123-4567
+- **Location**: Addis Ababa, Ethiopia
+
 
 ## 🙏 Acknowledgments
 
